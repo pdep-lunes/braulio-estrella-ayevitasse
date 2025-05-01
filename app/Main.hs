@@ -1,52 +1,65 @@
 --module Main where
 
-type Poder = Persona -> Persona
+type Poder = Personaje -> Personaje
 
-data Persona = UnaPersona {
+data Personaje = UnPersonaje {
     nombre :: String,
     poderBasico :: Poder,
     superPoder :: Poder,
     tieneSuperPoderActivo :: Bool,
     cantidadDeVida :: Int
-}
- 
+  } 
 
-obtenerCantidadDeVida :: Persona -> Int
-obtenerCantidadDeVida unaPersona = cantidadDeVida unaPersona
 bolaEspinosa :: Poder
-bolaEspinosa unaPersona 
-  | obtenerCantidadDeVida unaPersona > 1000 = unaPersona {cantidadDeVida = cantidadDeVida unaPersona - 1000}
-  | obtenerCantidadDeVida unaPersona < 1000 = unaPersona {cantidadDeVida = 0}
+bolaEspinosa unPersonaje
+    | cantidadDeVida unPersonaje > 1000 = unPersonaje {cantidadDeVida = cantidadDeVida unPersonaje - 1000}
+    | cantidadDeVida unPersonaje < 1000 = unPersonaje {cantidadDeVida = 0}
 
 lluviaDeTuercas :: String -> Poder
-lluviaDeTuercas "Sanadora" unaPersona = unaPersona {cantidadDeVida = cantidadDeVida unaPersona + 800}
-lluviaDeTuercas "Dañina" unaPersona = unaPersona {cantidadDeVida = div (cantidadDeVida unaPersona) 2 }
-lluviaDeTuercas _ unaPersona = unaPersona {cantidadDeVida = cantidadDeVida unaPersona}
+lluviaDeTuercas "Sanadora" unPersonaje = unPersonaje {cantidadDeVida = cantidadDeVida unPersonaje + 800}
+lluviaDeTuercas "Dañina" unPersonaje = unPersonaje {cantidadDeVida = div (cantidadDeVida unPersonaje) 2 }
+lluviaDeTuercas _ unPersonaje = unPersonaje {cantidadDeVida = cantidadDeVida unPersonaje}
 
 granadaDeEspinas :: Int -> Poder
-granadaDeEspinas unRadio unaPersona
-  |unRadio > 3 && (obtenerCantidadDeVida unaPersona) < 800 = unaPersona {nombre = nombre unaPersona ++ "Espina estuvo aqui",  tieneSuperPoderActivo = False, cantidadDeVida = 0 }
-  |unRadio > 3 = unaPersona {nombre = nombre unaPersona ++ "Espina estuvo aqui"}
-  |otherwise = bolaEspinosa unaPersona
+granadaDeEspinas unRadio unPersonaje
+  | unRadio > 3 && (cantidadDeVida unPersonaje) < 800 = unPersonaje {nombre = nombre unPersonaje ++ "Espina estuvo aqui",  tieneSuperPoderActivo = False, cantidadDeVida = 0 }
+  | unRadio > 3 = unPersonaje {nombre = nombre unPersonaje ++ " Espina estuvo aqui"}
+  | otherwise = bolaEspinosa unPersonaje
 
 torretaCurativa :: Poder 
-torretaCurativa unaPersona = unaPersona {tieneSuperPoderActivo = True, cantidadDeVida = cantidadDeVida unaPersona*2 }
+torretaCurativa unPersonaje = unPersonaje {tieneSuperPoderActivo = True, cantidadDeVida = cantidadDeVida unPersonaje *2 }
 
-{-
-pamela = UnaPersona  {
-    nombre = "Pamela" ,
-    poderBasico = lluviaDeTuercas "Sanadora",
-    superPoder = torretaCurativa,
-    tieneSuperPoderActivo = False,
-    cantidadDeVida = 9600
+atacarConElPoderEspecial :: Personaje -> Poder
+atacarConElPoderEspecial unPersonaje otroPersonaje
+  | tieneSuperPoderActivo unPersonaje = (superPoder unPersonaje.poderBasico unPersonaje) otroPersonaje
+  | otherwise = otroPersonaje
+
+pamela :: Personaje
+pamela = UnPersonaje  {
+  nombre = "Pamela" ,
+  poderBasico = lluviaDeTuercas "Sanadora",
+  superPoder = torretaCurativa,
+  tieneSuperPoderActivo = False,
+  cantidadDeVida = 9600
 } 
 
-espina = UnaPersona { 
+espina :: Personaje
+espina = UnPersonaje { 
     nombre = "Espina" ,
     poderBasico = bolaEspinosa,
     superPoder = granadaDeEspinas 5,
     tieneSuperPoderActivo = True,
     cantidadDeVida = 4800
-} 
--}
+  } 
+
+personajes :: [Personaje]
+personajes = [pamela, espina]
+
+quienesEstanEnLasUltimas :: [Personaje]->[String]
+quienesEstanEnLasUltimas personajes = nombresDeLosQueEstanEnLasUltimas personajes
+
+estaEnLasUltimas :: Personaje -> Bool
+estaEnLasUltimas unPersonaje = ((<800).cantidadDeVida) unPersonaje
+nombresDeLosQueEstanEnLasUltimas :: [Personaje]->[String]
+nombresDeLosQueEstanEnLasUltimas personajes = (map nombre.filter estaEnLasUltimas) personajes
 
