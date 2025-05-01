@@ -12,6 +12,9 @@ data Personaje = UnPersonaje {
     cantidadDeVida :: Int
 } 
 
+instance Show Personaje where
+  show (UnPersonaje nombre _ _ superPoderActivo vida) = "Personaje {nombre = "++ show nombre ++", cantidadDeVida="++ show vida ++", tieneSuperPoderActivo = "++ show superPoderActivo ++"}"
+
 bolaEspinosa :: Poder
 bolaEspinosa unPersonaje
   | cantidadDeVida unPersonaje > 1000 = unPersonaje {cantidadDeVida = cantidadDeVida unPersonaje - 1000}
